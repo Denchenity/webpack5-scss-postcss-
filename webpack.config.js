@@ -1,21 +1,20 @@
 const path = require('path');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const CssMin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
 const IsProd = !isDev;
 
-
-
 module.exports = {
     mode: 'development',
     entry: {
-        index: path.resolve(__dirname, './web/webpack/src'),
+        index: path.resolve(__dirname, './src/js'),
     },
     output: {
-        path: path.resolve(__dirname, './web/webpack/dist'),
+        path: path.resolve(__dirname, './dist'),
         filename: '[name].js',
-        assetModuleFilename: './images/[name][ext]'
+        clean: true,
     },
     devtool: isDev ? 'source-map': false,
     plugins: [
@@ -23,6 +22,11 @@ module.exports = {
         new CssMin({
             filename: 'style.css',
         }),
+        new HtmlWebpackPlugin({
+            template: `./src/index.html`,
+            filename: './index.html',
+            inject: true
+          }),
     ],
     module: {
         rules: [
@@ -39,7 +43,18 @@ module.exports = {
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: 'asset/resource',
+                generator: {
+                    filename: 'images/[name][ext]'
+                }
             },
+            //Шрифты
+            {
+                test: /\.ttf$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'font/[name][ext]'
+                }
+            }
         ],
     },
 }
